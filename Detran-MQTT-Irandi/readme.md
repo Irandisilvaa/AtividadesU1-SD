@@ -93,7 +93,26 @@ Terminal 5 (Cliente)
 powershell
 python cliente.py
 
+## Regras de Negócio e Restrições
 
+O sistema implementa restrições de integridade no banco de dados (SQLite com `FOREIGN KEYS` ativadas) para garantir a consistência dos dados do DENATRAN:
+
+1.  **Dependência de Cadastro (Ordem Obrigatória):**
+    * Não é possível **Emplacar um Veículo** para um CPF que não existe.
+        * *Solução:* Cadastre o Condutor primeiro.
+    * Não é possível **Lançar Multa** para uma Placa que não existe.
+        * *Solução:* Emplace o Veículo primeiro.
+    * Não é possível **Transferir Veículo** para um novo dono que não existe.
+        * *Solução:* Cadastre o novo Condutor antes da transferência.
+
+2.  **Unicidade:**
+    * **CPFs** e **Placas** são chaves primárias. O sistema impedirá o cadastro duplicado (ex: tentar cadastrar o mesmo CPF duas vezes retornará erro).
+
+3.  **Atribuição de Infrações:**
+    * Ao lançar uma multa informando apenas a **Placa** e os dados da infração, o sistema busca automaticamente o **proprietário atual** daquele veículo no banco de dados e vincula a pontuação ao CPF dele.
+
+4.  **Cálculo Tributário:**
+    * O IPVA é calculado automaticamente com uma alíquota fixa de **2%** sobre o valor declarado do veículo.
 ## Roteiro de Teste (Exemplo de Uso)
 Para testar o fluxo completo sem erros de integridade (Foreign Key), siga esta ordem no menu do cliente:
 
